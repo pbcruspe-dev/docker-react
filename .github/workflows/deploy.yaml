@@ -17,10 +17,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/frontend:${{ github.sha }} .
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest .
 
       - name: Push
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/frontend:${{ github.sha }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
       - name: Generate Dockerrun.aws.json
         run: |
@@ -28,7 +28,7 @@ jobs:
           {
             "AWSEBDockerrunVersion": 1,
             "Image": {
-              "Name": "${{ secrets.DOCKERHUB_USERNAME }}/frontend:${{ github.sha }}",
+              "Name": "${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest",
               "Update": "true"
             },
             "Ports": [
@@ -40,7 +40,7 @@ jobs:
           EOF
 
       - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*'
+        run: zip -r deploy.zip Dockerrun.aws.json
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v18
